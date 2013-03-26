@@ -2,16 +2,30 @@ from django.contrib import admin
 from pycoblog.models import BlogPost, BlogVar
 from django.contrib.sites.models import get_current_site
 
+
 class BlogVarInline(admin.TabularInline):
     model = BlogVar
     extra = 0
 
+def make_published(modeladmin, request, queryset):
+    queryset.update(status=BlogPost.STATUS_PUBLISHED)
+make_published.short_description = "Set to 'published'"
+def make_draft(modeladmin, request, queryset):
+    queryset.update(status=BlogPost.STATUS_DRAFT)
+make_draft.short_description = "Set to 'draft'"
+def make_deleted(modeladmin, request, queryset):
+    queryset.update(status=BlogPost.STATUS_DELETED)
+make_deleted.short_description = "Set to 'deleted'"
+
+
 class BlogAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'lang', 'author', 'last_editor',
-                    'date', 'last_date', 'timezone',)
-    list_display_links = ('id', 'title', )
+    actions = [make_published, make_draft, make_deleted]
     exclude = ('author', 'last_editor', 'sites', 'timezone',
                'lang', 'encoding', 'parent', 'type', )
+    list_display = ('id', 'title', 'lang', 'status', 'author',
+                    'date', 'last_date', )
+    list_display_links = ('id', 'title', )
+    list_filter = ('status', 'author', )
     inlines = (BlogVarInline,)
     
     def save_model(self, request, obj, form, change):

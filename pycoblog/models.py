@@ -21,8 +21,8 @@ class BlogManager(PostManager):
 
 class BlogPost(Post):
     
-    STATUS_OPEN = 'open'
-    StATUS_DRAFT = 'draft'
+    STATUS_PUBLISHED = 'published'
+    STATUS_DRAFT = 'draft'
     STATUS_DELETED = 'deleted'
     
     TYPE = 'blogpost'
@@ -32,7 +32,7 @@ class BlogPost(Post):
         proxy = True
     
     def set_published(self):
-        self.status = self.STATUS_OPEN
+        self.status = self.STATUS_PUBLISHED
         return self
     
     def set_draft(self):
