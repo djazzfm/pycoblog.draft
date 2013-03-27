@@ -30,7 +30,7 @@ make_deleted.short_description = "Set to 'deleted'"
 class BlogAdmin(admin.ModelAdmin):
     actions = [make_published, make_draft, make_deleted]
     exclude = ('author', 'last_editor', 'sites', 'lang', 'encoding',
-               'parent', 'type', 'date', 'last_date', )
+               'parent', 'type', 'date', 'last_date', 'format', )
     list_display = ('id', 'title', 'lang', 'status', 'author',
                     'date', 'last_date', )
     list_display_links = ('id', 'title', )
@@ -43,10 +43,11 @@ class BlogAdmin(admin.ModelAdmin):
         from django.utils import timezone
         obj.lang = settings.LANGUAGE_CODE
         obj.last_editor = request.user
-        obj.last_date = timezone.now() 
+        obj.last_date = timezone.now()
         if not change:
             obj.author = request.user
             obj.date = timezone.now()
+        obj.format = 'raw'
         super(BlogAdmin, self).save_model(request, obj, form, change)
         
         if not change:
