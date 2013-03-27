@@ -1,4 +1,24 @@
+from djazz.models import Config, ConfigManager
 from djazz.posts.models import Post, PostManager, PostVar
+
+class BlogConfigManager(ConfigManager):
+    def get_query_set(self):
+        q = super(BlogConfigManager, self).get_query_set()
+        return q.filter(section='pycoblog')
+    
+    def getvar(self, key, section='pycoblog'):
+        return super(BlogConfigManager).getvar(key, section)
+    
+    def setvar(self, key, value, section='pycoblog'):
+        return super(BlogConfigManager).setvar(key, value, section)
+    
+    def delvar(self, key, section='pycoblog'):
+        return super(BlogConfigManager).delvar(key, section)
+
+class BlogConfig(Config):
+    objects = BlogConfigManager()
+    class Meta:
+        proxy = True
 
 
 class BlogManager(PostManager):

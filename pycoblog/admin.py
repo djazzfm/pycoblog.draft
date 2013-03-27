@@ -1,7 +1,15 @@
 from django.contrib import admin
-from pycoblog.models import BlogPost, BlogVar
+from pycoblog.models import BlogPost, BlogVar, BlogConfig
 from django.contrib.sites.models import get_current_site
 
+class ConfigAdmin(admin.ModelAdmin):
+    exclude = ('section', )
+    list_display = ('key', 'value', )
+    def save_model(self, request, obj, form, change):
+        obj.section = 'pycoblog'
+        super(ConfigAdmin, self).save_model(request, obj, form, change)
+
+admin.site.register(BlogConfig, ConfigAdmin)
 
 class BlogVarInline(admin.TabularInline):
     model = BlogVar
@@ -20,25 +28,26 @@ make_deleted.short_description = "Set to 'deleted'"
 
 class BlogAdmin(admin.ModelAdmin):
     actions = [make_published, make_draft, make_deleted]
-    exclude = ('author', 'last_editor', 'sites', 'timezone',
-               'lang', 'encoding', 'parent', 'type', )
+    exclude = ('author', 'last_editor', 'sites', 'lang', 'encoding',
+               'parent', 'type', 'date', 'last_date', )
     list_display = ('id', 'title', 'lang', 'status', 'author',
                     'date', 'last_date', )
     list_display_links = ('id', 'title', )
     list_filter = ('status', 'author', )
-    inlines = (BlogVarInline,)
+    inlines = (BlogVarInline, )
     
     def save_model(self, request, obj, form, change):
         from django.conf import settings
+        from django.utils import timezone
         obj.lang = settings.LANGUAGE_CODE
         obj.last_editor = request.user
+        obj.last_date = timezone.now() 
         if not change:
             obj.author = request.user
-        obj.timezone = settings.TIME_ZONE
+            obj.date = timezone.now()
         super(BlogAdmin, self).save_model(request, obj, form, change)
         
         if not change:
             obj.sites.add(get_current_site(request))
-
-
 admin.site.register(BlogPost, BlogAdmin)
+
