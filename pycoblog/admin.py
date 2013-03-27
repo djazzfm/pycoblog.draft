@@ -5,6 +5,7 @@ from django.contrib.sites.models import get_current_site
 class ConfigAdmin(admin.ModelAdmin):
     exclude = ('section', )
     list_display = ('key', 'value', )
+    ordering = ('key',)
     def save_model(self, request, obj, form, change):
         obj.section = 'pycoblog'
         super(ConfigAdmin, self).save_model(request, obj, form, change)
@@ -33,8 +34,9 @@ class BlogAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'lang', 'status', 'author',
                     'date', 'last_date', )
     list_display_links = ('id', 'title', )
-    list_filter = ('status', 'author', )
+    list_filter = ('status', 'author', 'lang', )
     inlines = (BlogVarInline, )
+    ordering = ('-date',)
     
     def save_model(self, request, obj, form, change):
         from django.conf import settings
