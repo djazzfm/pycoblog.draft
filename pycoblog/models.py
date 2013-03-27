@@ -7,13 +7,13 @@ class BlogConfigManager(ConfigManager):
         return q.filter(section='pycoblog')
     
     def getvar(self, key, section='pycoblog'):
-        return super(BlogConfigManager).getvar(key, section)
+        return super(BlogConfigManager,self).getvar(key,section)
     
     def setvar(self, key, value, section='pycoblog'):
-        return super(BlogConfigManager).setvar(key, value, section)
+        return super(BlogConfigManager,self).setvar(key,value,section)
     
     def delvar(self, key, section='pycoblog'):
-        return super(BlogConfigManager).delvar(key, section)
+        return super(BlogConfigManager,self).delvar(key,section)
 
 class BlogConfig(Config):
     objects = BlogConfigManager()
