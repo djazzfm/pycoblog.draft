@@ -1,6 +1,7 @@
 from django.contrib import admin
 from pycoblog.models import BlogPost, BlogVar, BlogConfig
 from django.contrib.sites.models import get_current_site
+from django import forms
 
 class ConfigAdmin(admin.ModelAdmin):
     exclude = ('section', )
@@ -26,6 +27,15 @@ def make_deleted(modeladmin, request, queryset):
     queryset.update(status=BlogPost.STATUS_DELETED)
 make_deleted.short_description = "Set to 'deleted'"
 
+class BlogModelForm(forms.ModelForm):
+    STATUS_CHOICES = (
+        ('published', 'Published'),
+        ('draft', 'Draft'),
+        ('deleted', 'Deleted'),
+    )
+    status = forms.ChoiceField(choices=STATUS_CHOICES)
+    class Meta:
+        model = BlogPost
 
 class BlogAdmin(admin.ModelAdmin):
     actions = [make_published, make_draft, make_deleted]
@@ -37,6 +47,7 @@ class BlogAdmin(admin.ModelAdmin):
     list_filter = ('status', 'author', 'lang', )
     inlines = (BlogVarInline, )
     ordering = ('-date',)
+    form = BlogModelForm
     
     def save_model(self, request, obj, form, change):
         from django.conf import settings
